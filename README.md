@@ -18,5 +18,5 @@ PyTorch:
 
     Neural Networks: skeleton NN in PyTorch
     
-    Convolutional Neural Networks: basic Convolutional Neural Network in PyTorch to classify CIFAR10
+    Convolutional Neural Networks: basic Convolutional Neural Network in PyTorch to classify CIFAR10 (currently 54% accuracy)
 
