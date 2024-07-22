@@ -10,5 +10,13 @@ Keras:
 
 PyTorch:
 
-    still doing the tutorial!
+    Follow alongs doing the Tutorials;
+
+    Tensors: basics of PyTorch tensors
+
+    Autograd: PyTorch’s automatic differentiation engine that powers neural network training.
+
+    Neural Networks: skeleton NN in PyTorch
+    
+    Convolutional Neural Networks: basic Convolutional Neural Network in PyTorch to classify CIFAR10
 
