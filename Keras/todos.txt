@@ -1,0 +1,6 @@
+Normal NN:
+    1. Improve accuracy (tweak parameters) - normalize the data
+    2. Save model, make predictions later (https://machinelearningmastery.com/save-load-keras-deep-learning-models/)
+
+Conv NN:
+    1. Improve accuracy - more conv. layers, lower learning rate
