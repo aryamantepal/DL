@@ -1,0 +1,14 @@
+artifact_uri: mlflow-artifacts:/936698270844984070/dde558ee2e6a4771bd693f86a6228a88/artifacts
+end_time: 1749643753813
+entry_point_name: ''
+experiment_id: '936698270844984070'
+lifecycle_stage: active
+run_id: dde558ee2e6a4771bd693f86a6228a88
+run_name: skillful-mole-253
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1749643751582
+status: 3
+tags: []
+user_id: aryamantepal

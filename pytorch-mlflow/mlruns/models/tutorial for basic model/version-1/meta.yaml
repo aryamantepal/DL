@@ -1,0 +1,18 @@
+aliases: []
+creation_timestamp: 1749643753786
+current_stage: None
+deployment_job_state: null
+description: ''
+last_updated_timestamp: 1749643753786
+metrics: null
+model_id: m-a6b1045b32694ab0945eca6b6b7d9767
+name: tutorial for basic model
+params: null
+run_id: dde558ee2e6a4771bd693f86a6228a88
+run_link: ''
+source: models:/m-a6b1045b32694ab0945eca6b6b7d9767
+status: READY
+status_message: null
+storage_location: mlflow-artifacts:/936698270844984070/models/m-a6b1045b32694ab0945eca6b6b7d9767/artifacts
+user_id: null
+version: 1
