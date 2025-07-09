@@ -19,11 +19,15 @@ df_train = df[100:m].T
 Y_train = df_train[0]
 X_train = df_train[1:n]
 
+# normalizing
+X_train = X_train / 255.
+X_dev = X_dev / 255.
 
 def init_params():
-    W1 = np.random.rand(10,784)
+    W1 = np.random.randn(10, 784) * np.sqrt(1. / 784)
+    W2 = np.random.randn(10, 10) * np.sqrt(1. / 10)
     b1 = np.random.rand(10, 1)
-    W2 = np.random.rand(10, 10)
+    # W2 = np.random.rand(10, 10)
     b2 = np.random.rand(10, 1)
     return W1, b1, W2, b2
 
@@ -89,7 +93,7 @@ def gradient_descent(X, Y, epochs, alpha):
         W1, b1, W2, b2 = update_params(W1, b1, W2, b2, dW1, db1, dW2, db2, alpha)
         # if i % 10 == 0:
             # print("iteration:", i)
-            # print("accuracy:", get_accuracy(get_predictions(A2), Y))
+        print("accuracy:", i, get_accuracy(get_predictions(A2), Y))
     return W1, b1, W2, b2
     
-W1, b1, W2, b2 = gradient_descent(X_train, Y_train, 10000, 0.1)
+W1, b1, W2, b2 = gradient_descent(X_train, Y_train, 100, 0.1)
