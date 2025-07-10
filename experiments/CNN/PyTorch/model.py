@@ -14,10 +14,10 @@ transform=transforms.Compose([
         ])
 
 trainset = torchvision.datasets.MNIST(root = './MNISTdata', train = True, download = True, transform=transform)
-train_loader = torch.utils.data.DataLoader(trainset, batch_size=4)
+train_loader = torch.utils.data.DataLoader(trainset, batch_size=64)
 
 testset = torchvision.datasets.MNIST(root = './MNISTdata', train = False, download = True, transform=transform)
-test_loader = torch.utils.data.DataLoader(testset, batch_size=4)
+test_loader = torch.utils.data.DataLoader(testset, batch_size=64)
 
 class CNN(nn.Module):
     def __init__(self):
