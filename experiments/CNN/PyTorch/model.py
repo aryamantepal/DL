@@ -24,17 +24,19 @@ class CNN(nn.Module):
         super().__init__()
         self.conv1 = nn.Conv2d(1, 32, 3, 1)
         self.conv2 = nn.Conv2d(32, 64, 3, 1)
+        self.conv3 = nn.Conv2d(64, 128, 3, 1)
         self.pool = nn.MaxPool2d(2, 2)
         self.dropout1 = nn.Dropout(0.25)
         self.dropout2 = nn.Dropout(0.5)
-        #
-        self.fc1 = nn.Linear(9216, 128)
+        self.fc1 = nn.Linear(15488, 128)
         self.fc2 = nn.Linear(128, 10)
         
     def forward(self, x):
         x = self.conv1(x)
         x = F.relu(x)
         x = self.conv2(x)
+        x = F.relu(x)
+        x = self.conv3(x)
         x = F.relu(x)
         
         x = self.pool(x)
@@ -67,7 +69,6 @@ for epoch in range(100):
         outputs = convNet(inputs)
         loss = criterion(outputs, labels)
         
-        # writer.add_scalar("Loss/train", loss, epoch)
         
         loss.backward()
         optimizer.step()
