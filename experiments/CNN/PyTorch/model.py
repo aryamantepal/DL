@@ -14,10 +14,10 @@ transform=transforms.Compose([
         ])
 
 trainset = torchvision.datasets.MNIST(root = './MNISTdata', train = True, download = True, transform=transform)
-train_loader = torch.utils.data.DataLoader(trainset, batch_size=4)
+train_loader = torch.utils.data.DataLoader(trainset, batch_size=64)
 
 testset = torchvision.datasets.MNIST(root = './MNISTdata', train = False, download = True, transform=transform)
-test_loader = torch.utils.data.DataLoader(testset, batch_size=4)
+test_loader = torch.utils.data.DataLoader(testset, batch_size=64)
 
 class CNN(nn.Module):
     def __init__(self):
@@ -54,10 +54,10 @@ class CNN(nn.Module):
         
 convNet = CNN()
 
-optimizer = torch.optim.Adam(convNet.parameters(), lr = 0.01)
+optimizer = torch.optim.Adam(convNet.parameters(), lr = 0.001)
 criterion = nn.CrossEntropyLoss()
 
-for epoch in range(2):
+for epoch in range(100):
     running_loss = 0.0
     for i, data in enumerate(train_loader, 0):
         # data is a list of [inputs, labels]
