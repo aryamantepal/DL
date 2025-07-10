@@ -54,7 +54,7 @@ class CNN(nn.Module):
         
 convNet = CNN()
 
-optimizer = torch.optim.Adam(convNet.parameters(), lr = 0.01)
+optimizer = torch.optim.Adam(convNet.parameters(), lr = 0.001)
 criterion = nn.CrossEntropyLoss()
 
 for epoch in range(2):
