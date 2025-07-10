@@ -1,0 +1,1 @@
+this is a CNN defined with only numpy, trained on the MNIST dataset. I did this as a learning experience to (try) understand the math behind a deep neural network.
