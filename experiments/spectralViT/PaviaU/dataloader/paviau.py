@@ -6,8 +6,8 @@ from scipy.io import loadmat
 class PaviaUDataset(Dataset):
     def __init__(self, data_path, gt_path, patch_size=5, normalize=True):
         self.patch_size = patch_size
-        self.data = loadmat(data_path)["PaviaU"]
-        self.labels = loadmat(gt_path)["PaviaU_gt"]
+        self.data = loadmat(data_path)["paviaU"]
+        self.labels = loadmat(gt_path)["paviaU_gt"]
         if normalize:
             self.data = self.normalize_hsi(self.data)
         self.patches, self.targets = self.extract_patches()

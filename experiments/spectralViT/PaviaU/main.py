@@ -16,7 +16,7 @@ config = {
     "depth": 4,
     "num_heads": 4,
     "mlp_dim": 128,
-    "num_classes": 16,
+    "num_classes": 9,
     "lr": 1e-3,
     "epochs": 10,
     "device": "cuda" if torch.cuda.is_available() else "cpu"
