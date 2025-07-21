@@ -18,9 +18,9 @@ class IndianPinesDataset(Dataset):
         data = data.astype(np.float32)
         for i in range(data.shape[-1]):
             band = data[:, :, i]
-            band -= band.min()
-            band /= band.max()
-            data[:, :, i] = band
+            mean = band.mean()
+            std = band.std()
+            data[:, :, i] = (band - mean) / (std + 1e-6)
         return data
     
     def extract_patches(self):
