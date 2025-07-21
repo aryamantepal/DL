@@ -33,6 +33,8 @@ class TransformerBlock(nn.Module):
         x = x + self.mlp(self.norm2(x))
         return x
 
+
+
 class SpectralViT(nn.Module):
     def __init__(self, *, in_channels, img_size, patch_size, emb_dim, depth, num_heads, mlp_dim, num_outputs, use_cls_token=False):
         super().__init__()
