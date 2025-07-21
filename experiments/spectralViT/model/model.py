@@ -11,11 +11,9 @@ class SpectralPatchEmbedding(nn.Module):
         self.pos_embed = nn.Parameter(torch.randn(1, self.n_patches, emb_dim))
     
     def forward(self, x):
-        # x: (B, C, H, W)
-        x = self.proj(x)  # (B, emb_dim, H//p, W//p)
-        x = x.flatten(2).transpose(1, 2)  # (B, N_patches, emb_dim)
-        x = x + self.pos_embed
-        return x
+        x = self.proj(x)  
+        x = x.flatten(2).transpose(1, 2)  
+        return x + self.pos_embed
 
 class TransformerBlock(nn.Module):
     def __init__(self, emb_dim, num_heads, mlp_dim, dropout=0.1):
@@ -59,88 +57,3 @@ class SpectralViT(nn.Module):
         return self.head(x)
 
 
-indian_pines_path = "/Users/aryamantepal/Desktop/Tufts2024/data/Indian_pines_corrected.mat"
-indian_pines_path_gt = "/Users/aryamantepal/Desktop/Tufts2024/data/Indian_pines_gt.mat"
-
-from scipy.io import loadmat
-import numpy as np
-
-
-data = loadmat(indian_pines_path)["indian_pines_corrected"]  # shape: (145, 145, 220)
-labels = loadmat(indian_pines_path_gt)["indian_pines_gt"]     # shape: (145, 145)
-
-def normalize_hsi(data):
-    data = data.astype(np.float32)
-    for i in range(data.shape[-1]):
-        band = data[:, :, i]
-        band -= band.min()
-        band /= band.max()
-        data[:, :, i] = band
-    return data
-
-data = normalize_hsi(data)  # shape: (145, 145, bands)
-
-def extract_patches(data, labels, patch_size=5):
-    pad = patch_size // 2
-    h, w, c = data.shape
-    data_padded = np.pad(data, ((pad, pad), (pad, pad), (0, 0)), mode='reflect')
-    patches, targets = [], []
-
-    for i in range(pad, h + pad):
-        for j in range(pad, w + pad):
-            label = labels[i - pad, j - pad]
-            if label == 0:
-                continue  # skip unlabeled
-            patch = data_padded[i - pad:i + pad + 1, j - pad:j + pad + 1, :]
-            patches.append(patch)
-            targets.append(label - 1)  # labels from 0 to 15
-
-    return np.array(patches), np.array(targets)
-
-patches, targets = extract_patches(data, labels, patch_size=5)
-print(patches.shape)  # (N, 5, 5, bands)
-print(targets.shape)  # (N,)
-
-import torch
-from torch.utils.data import Dataset, DataLoader
-
-class IndianPinesPatches(Dataset):
-    def __init__(self, patches, labels):
-        self.patches = torch.from_numpy(patches).permute(0, 3, 1, 2).float()  # (N, C, H, W)
-        self.labels = torch.from_numpy(labels).long()
-
-    def __len__(self):
-        return len(self.labels)
-
-    def __getitem__(self, idx):
-        return self.patches[idx], self.labels[idx]
-
-dataset = IndianPinesPatches(patches, targets)
-train_loader = DataLoader(dataset, batch_size=64, shuffle=True)
-
-model = SpectralViT(
-    in_channels=data.shape[-1],  
-    img_size=(5, 5),             
-    patch_size=1,                
-    emb_dim=64,
-    depth=4,
-    num_heads=4,
-    mlp_dim=128,
-    num_outputs=16,              
-    use_cls_token=True,
-)
-
-optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
-loss_fn = nn.CrossEntropyLoss()
-
-model.train()
-for epoch in range(10):
-    total_loss = 0
-    for x, y in train_loader:
-        optimizer.zero_grad()
-        logits = model(x)
-        loss = loss_fn(logits, y)
-        loss.backward()
-        optimizer.step()
-        total_loss += loss.item()
-    print(f"Epoch {epoch}, Loss: {total_loss:.4f}")
