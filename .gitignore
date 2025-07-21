@@ -4,3 +4,4 @@ PyTorch/DL Research Repo/data
 PyTorch/PyTorch Blitz/Convolutional Neural Network/MNISTdata
 data
 experiments/CNN/PyTorch/MNISTdata
+__pycache__
