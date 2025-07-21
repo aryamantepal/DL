@@ -17,8 +17,6 @@ class SpectralPatchEmbedding(nn.Module):
         x = x + self.pos_embed
         return x
 
-
-
 class TransformerBlock(nn.Module):
     def __init__(self, emb_dim, num_heads, mlp_dim, dropout=0.1):
         super().__init__()
@@ -121,14 +119,14 @@ dataset = IndianPinesPatches(patches, targets)
 train_loader = DataLoader(dataset, batch_size=64, shuffle=True)
 
 model = SpectralViT(
-    in_channels=data.shape[-1],  # e.g., ~200 bands
-    img_size=(5, 5),             # patch size matches spatial patch
-    patch_size=5,                # single patch, so it's 1 token
+    in_channels=data.shape[-1],  
+    img_size=(5, 5),             
+    patch_size=1,                
     emb_dim=64,
     depth=4,
     num_heads=4,
     mlp_dim=128,
-    num_outputs=16,              # 16 classes
+    num_outputs=16,              
     use_cls_token=True,
 )
 
