@@ -8,10 +8,8 @@ class IndianPinesDataset(Dataset):
         self.patch_size = patch_size
         self.data = loadmat(data_path)["indian_pines_corrected"]
         self.labels = loadmat(gt_path)["indian_pines_gt"]
-        # self.data = (self.data - np.min(self.data)) / (np.max(self.data) - np.min(self.data))
         if normalize:
             self.data = self.normalize_hsi(self.data)
-        
         self.patches, self.targets = self.extract_patches()
         
     def normalize_hsi(self, data):
