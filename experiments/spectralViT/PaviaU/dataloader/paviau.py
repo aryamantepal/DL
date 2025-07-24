@@ -3,6 +3,7 @@ import torch
 from torch.utils.data import Dataset
 from scipy.io import loadmat
 
+
 class PaviaUDataset(Dataset):
     def __init__(self, data_path, gt_path, patch_size=5, normalize=True):
         self.patch_size = patch_size
@@ -44,5 +45,4 @@ class PaviaUDataset(Dataset):
     def __getitem__(self, idx):
         patch = torch.from_numpy(self.patches[idx]).float().permute(2, 0, 1)
         label = torch.tensor(self.targets[idx]).long()
-        h, w = self.pixel_coords[idx] 
-        return patch, label, (h, w)  
+        return patch, label

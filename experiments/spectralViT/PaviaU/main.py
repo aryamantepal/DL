@@ -6,7 +6,13 @@ from dataloader.paviau import PaviaUDataset
 from model.model import SpectralViT
 import matplotlib.pyplot as plt
 
-# Config
+import argparse
+
+            
+parser = argparse.ArgumentParser()
+parser.add_argument('--epochs', type=int, default=10, help='Number of training epochs')
+args = parser.parse_args()
+
 config = {
     "data_path": "/Users/aryamantepal/Desktop/Tufts2024/data/PaviaU.mat",
     "gt_path": "/Users/aryamantepal/Desktop/Tufts2024/data/PaviaU_gt.mat",
@@ -20,7 +26,8 @@ config = {
     "num_classes": 9,
     "lr": 1e-3,
     "epochs": 10,
-    "device": "cuda" if torch.cuda.is_available() else "cpu"
+    "device": "cuda" if torch.cuda.is_available() else "cpu",
+    "epochs": args.epochs
 }
 
 def predict_entire_image(model, dataset, device):
