@@ -4,8 +4,13 @@ from torch.utils.data import DataLoader, random_split
 from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
 from dataloader.indianPines import IndianPinesDataset
 from model.model import SpectralViT
+import argparse
 
-# Config
+            
+parser = argparse.ArgumentParser()
+parser.add_argument('--epochs', type=int, default=10, help='Number of training epochs')
+args = parser.parse_args()
+
 config = {
     "data_path": "/Users/aryamantepal/Desktop/Tufts2024/data/Indian_pines_corrected.mat",
     "gt_path": "/Users/aryamantepal/Desktop/Tufts2024/data/Indian_pines_gt.mat",
@@ -19,7 +24,8 @@ config = {
     "num_classes": 16,
     "lr": 1e-3,
     "epochs": 10,
-    "device": "cuda" if torch.cuda.is_available() else "cpu"
+    "device": "cuda" if torch.cuda.is_available() else "cpu",
+    "epochs": args.epochs,
 }
 
 def train_one_epoch(model, loader, criterion, optimizer, device):
