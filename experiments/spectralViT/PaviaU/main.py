@@ -4,6 +4,7 @@ from torch.utils.data import DataLoader, random_split
 from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
 from dataloader.paviau import PaviaUDataset
 from model.model import SpectralViT
+import matplotlib.pyplot as plt
 
 # Config
 config = {
@@ -21,6 +22,29 @@ config = {
     "epochs": 10,
     "device": "cuda" if torch.cuda.is_available() else "cpu"
 }
+
+def predict_entire_image(model, dataset, device):
+    """Predict class labels for the entire hyperspectral image"""
+    model.eval()
+    full_preds = np.zeros(dataset.gt.shape, dtype=np.uint8)
+    
+    with torch.no_grad():
+        # Create a DataLoader that processes the entire image
+        full_loader = DataLoader(dataset, batch_size=config["batch_size"], shuffle=False)
+        
+        batch_start = 0
+        for x, y, (h, w) in full_loader:  # Assuming your dataset returns (h,w) positions
+            x = x.to(device)
+            outputs = model(x)
+            preds = torch.argmax(outputs, dim=1).cpu().numpy()
+            
+            # Place predictions back in their spatial positions
+            for i, (hi, wi) in enumerate(zip(h, w)):
+                full_preds[hi, wi] = preds[i] + 1  # +1 if your classes are 1-indexed
+            
+            batch_start += x.size(0)
+    
+    return full_preds
 
 def train_one_epoch(model, loader, criterion, optimizer, device):
     model.train()
@@ -101,6 +125,16 @@ def main():
             print(cm)
             print("\nClassification Report:")
             print(report)
+            
+    full_preds = predict_entire_image(model, dataset, config["device"])
+    
+    # Save predictions
+    import matplotlib.pyplot as plt
+    plt.imshow(full_preds, cmap='jet')
+    plt.colorbar()
+    plt.savefig('pavia_u_predictions.png')
+    plt.close()
+    
 
 if __name__ == "__main__":
     main()
