@@ -44,5 +44,4 @@ class IndianPinesDataset(Dataset):
     def __getitem__(self, idx):
         patch = torch.from_numpy(self.patches[idx]).float().permute(2, 0, 1)
         label = torch.tensor(self.targets[idx]).long()
-        h, w = self.pixel_coords[idx] 
-        return patch, label, (h, w)  
+        return patch, label
