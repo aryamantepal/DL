@@ -20,7 +20,7 @@ class Generator(nn.Module):
             nn.ConvTranspose2d(64, 32, kernel_size=4, stride=2, padding=1),
             nn.BatchNorm2d(32),
             nn.ReLU(inplace=True),
-            
+
             nn.ConvTranspose2d(32, 3, kernel_size=4, stride=2, padding=1),
             nn.Tanh()
         )
@@ -29,3 +29,10 @@ class Generator(nn.Module):
         x = self.inp(x)
         x = x.view(-1, 256, 4, 4)
         return self.model(x)
+
+class Discriminator(nn.Module):
+    def __init__(self):
+        super(Discriminator, self).__init__()
+
+    def forward(self, x):
+        pass
