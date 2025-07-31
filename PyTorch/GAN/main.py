@@ -1,8 +1,12 @@
 from model import Generator, Discriminator
-from data import PokemonSpriteDataset
+from data import PokemonSpriteDataset, transform
 from torch.utils.data import Dataset, DataLoader
 import torch
+from types import SimpleNamespace
 
+
+# Initialize dataset
+sprite_dir = "/home/a.tepal/snap/snapd-desktop-integration/common/GAN/archive/PokemonData/" 
 dataset = PokemonSpriteDataset(sprite_dir, transform=transform)
 dataloader = DataLoader(dataset, batch_size=64, shuffle=True)
 
@@ -13,12 +17,17 @@ adversarial_loss = torch.nn.BCELoss()
 generator = Generator()
 discriminator = Discriminator()
 
-lr = 0.0002
-b1 = 0.5
-b2 = 0.999
-latent_dim = 100
-sample_interval = 400
-
+opt = SimpleNamespace(
+    n_epochs=200,
+    batch_size=64,
+    lr=0.0002,
+    b1=0.5,
+    b2=0.999,
+    latent_dim=100,
+    img_size=64,
+    channels=3,
+    sample_interval=400
+)
 
 # Optimizers
 optimizer_G = torch.optim.Adam(generator.parameters(), lr=opt.lr, betas=(opt.b1, opt.b2))
