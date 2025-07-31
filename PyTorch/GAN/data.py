@@ -12,7 +12,7 @@ transform = transforms.Compose([
 
 class PokemonSpriteDataset(Dataset):
     def __init__(self, image_dir, transform=None):
-        self.image_paths = glob.glob(os.path.join(image_dir, '*.png'))
+        self.image_paths = glob.glob(os.path.join(image_dir, '*.jpg'))
         self.transform = transform
 
     def __len__(self):
@@ -24,6 +24,6 @@ class PokemonSpriteDataset(Dataset):
             image = self.transform(image)
         return image
 
-sprite_dir = "/common/GAN/archive"  
+sprite_dir = "/common/GAN/archive/PokemonData/"  
 dataset = PokemonSpriteDataset(sprite_dir, transform=transform)
 dataloader = DataLoader(dataset, batch_size=64, shuffle=True)
