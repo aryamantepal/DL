@@ -6,13 +6,13 @@ import glob
 
 transform = transforms.Compose([
     transforms.Resize((64, 64)),
-    transforms.ToTensor(),                   
+    transforms.ToTensor(),                    
     transforms.Normalize([0.5]*3, [0.5]*3)     
 ])
 
 class PokemonSpriteDataset(Dataset):
     def __init__(self, image_dir, transform=None):
-        self.image_paths = glob.glob(os.path.join(image_dir, '*.jpg'))
+        self.image_paths = glob.glob(os.path.join(image_dir, '**/*.jpg'), recursive=True)
         self.transform = transform
 
     def __len__(self):
@@ -24,6 +24,8 @@ class PokemonSpriteDataset(Dataset):
             image = self.transform(image)
         return image
 
-sprite_dir = "/common/GAN/archive/PokemonData/"  
+sprite_dir = "GAN/archive/PokemonData/" 
 dataset = PokemonSpriteDataset(sprite_dir, transform=transform)
-dataloader = DataLoader(dataset, batch_size=64, shuffle=True)
+# dataloader = DataLoader(dataset, batch_size=64, shuffle=True)
+
+print(len(dataset))
