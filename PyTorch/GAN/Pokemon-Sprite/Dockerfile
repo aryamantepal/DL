@@ -1,31 +1,26 @@
-# -------- Step 1: pick a base image --------
-# If training with GPU, pick CUDA base:
-# ARG BASE_IMAGE=pytorch/pytorch:2.4.0-cuda12.1-cudnn9-runtime
-# If CPU only, change to:
-ARG BASE_IMAGE=pytorch/pytorch:2.4.0-cpu
+# CPU-only, portable across amd64 and arm64 (Apple Silicon)
+FROM python:3.10-slim
 
-FROM ${BASE_IMAGE}
+ENV PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1
 
-# -------- Step 2: set basic environment settings --------
-ENV DEBIAN_FRONTEND=noninteractive \
-    PYTHONUNBUFFERED=1
+# system deps (optional but helpful for Pillow)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    git ca-certificates && rm -rf /var/lib/apt/lists/*
 
-# -------- Step 3: set working directory --------
 WORKDIR /app
+COPY . /app
 
-# -------- Step 4: install Python dependencies --------
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+# Install PyTorch CPU wheels + deps
+# Pin torch/torchvision to compatible versions (adjust if needed)
+RUN python -m pip install --upgrade pip && \
+    pip install --index-url https://download.pytorch.org/whl/cpu \
+    torch==2.4.0 torchvision==0.19.0 && \
+    pip install pillow numpy glob2
 
-# -------- Step 5: copy your code into the container --------
-COPY . .
-
-# -------- Step 6: set default environment variables --------
+# Default mount points / envs
 ENV DATA_DIR=/data \
     OUT_DIR=/outputs
-
-# Make sure these folders exist inside the container
 RUN mkdir -p /data /outputs
 
-# -------- Step 7: set the default run command --------
 CMD ["python", "main.py"]
