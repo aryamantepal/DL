@@ -95,4 +95,4 @@ for epoch in range(opt.n_epochs):
 
         batches_done = epoch * len(dataloader) + i
         if batches_done % opt.sample_interval == 0:
-            save_image(gen_imgs.data[:25], "/home/a.tepal/snap/snapd-desktop-integration/common/GAN/images/%d.png" % batches_done, nrow=5, normalize=True)
+            save_image(gen_imgs.data[:25], f"{OUT_DIR}/{batches_done}.png", nrow=5, normalize=True)

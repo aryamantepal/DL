@@ -1,3 +1,4 @@
 torchvision==0.18.1
-pillow
+Pillow
 numpy
+glob2
