@@ -4,10 +4,14 @@ from torch.utils.data import Dataset, DataLoader
 import torch
 from types import SimpleNamespace
 from torchvision.utils import save_image
+import os
 
+DATA_DIR = os.getenv("DATA_DIR", "GAN/archive/PokemonData")
+OUT_DIR = os.getenv("OUT_DIR", "/outputs")
+os.makedirs(OUT_DIR, exist_ok=True)
 
 # Initialize dataset
-sprite_dir = "/home/a.tepal/snap/snapd-desktop-integration/common/GAN/archive/PokemonData/" 
+sprite_dir = DATA_DIR
 dataset = PokemonSpriteDataset(sprite_dir, transform=transform)
 dataloader = DataLoader(dataset, batch_size=64, shuffle=True)
 
