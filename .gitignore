@@ -6,3 +6,4 @@ data
 experiments/CNN/PyTorch/MNISTdata
 __pycache__
 PyTorch/GAN/Pokemon-Sprite/pokemon_images
+out

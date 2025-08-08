@@ -1,1 +1,1 @@
-- download Pokemon dataset from kaggle
+- download Pokemon dataset from kaggle (done)
