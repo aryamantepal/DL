@@ -1,5 +1,6 @@
 import torch.utils.data as data
 import torch
+import matplotlib.pyplot as plt
 
 class XORDataset(data.Dataset):
     def __init__(self, size, std=0.1):
@@ -39,3 +40,22 @@ class XORDataset(data.Dataset):
 dataset = XORDataset(size=200)
 print("Size of dataset:", len(dataset))
 print("Data point 0:", dataset[0])
+
+def visualize_samples(data, label):
+    if isinstance(data, torch.Tensor):
+        data = data.cpu().numpy()
+    if isinstance(label, torch.Tensor):
+        label = label.cpu().numpy()
+    data_0 = data[label == 0]
+    data_1 = data[label == 1]
+
+    plt.figure(figsize=(4,4))
+    plt.scatter(data_0[:,0], data_0[:,1], edgecolor="#333", label="Class 0")
+    plt.scatter(data_1[:,0], data_1[:,1], edgecolor="#333", label="Class 1")
+    plt.title("Dataset samples")
+    plt.ylabel(r"$x_2$")
+    plt.xlabel(r"$x_1$")
+    plt.legend()
+
+visualize_samples(dataset.data, dataset.label)
+plt.show()
