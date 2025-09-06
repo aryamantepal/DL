@@ -90,7 +90,7 @@ optimizer = torch.optim.SGD(model.parameters(), lr=0.1)
 train_dataset = XORDataset(size=2500)
 train_data_loader = data.DataLoader(train_dataset, batch_size=128, shuffle=True)
 
-device = torch.device("cuda")
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model.to(device)
 
 def train_model(model, optimizer, data_loader, loss_module, num_epochs=100):
@@ -134,4 +134,31 @@ new_model.load_state_dict(state_dict)
 
 print("Original model\n", model.state_dict())
 print("\nLoaded model\n", new_model.state_dict())
+
+# evaluation
+test_dataset = XORDataset(size=500)
+test_data_loader = data.DataLoader(test_dataset, batch_size=128, shuffle=False, drop_last=False)
+
+def eval_model(model, data_loader):
+    model.eval() # Set model to eval mode
+    true_preds, num_preds = 0., 0.
+
+    with torch.no_grad(): # Deactivate gradients for the following code
+        for data_inputs, data_labels in data_loader:
+
+            # Determine prediction of model on dev set
+            data_inputs, data_labels = data_inputs.to(device), data_labels.to(device)
+            preds = model(data_inputs)
+            preds = preds.squeeze(dim=1)
+            preds = torch.sigmoid(preds) # Sigmoid to map predictions between 0 and 1
+            pred_labels = (preds >= 0.5).long() # Binarize predictions to 0 and 1
+
+            # Keep records of predictions for the accuracy metric (true_preds=TP+TN, num_preds=TP+TN+FP+FN)
+            true_preds += (pred_labels == data_labels).sum()
+            num_preds += data_labels.shape[0]
+
+    acc = true_preds / num_preds
+    print(f"Accuracy of the model: {100.0*acc:4.2f}%")
+    
+eval_model(model, test_data_loader)
 
