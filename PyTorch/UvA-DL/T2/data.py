@@ -59,3 +59,8 @@ def visualize_samples(data, label):
 
 visualize_samples(dataset.data, dataset.label)
 plt.show()
+
+data_loader = data.DataLoader(dataset=dataset, batch_size=8, shuffle=True)
+data_inputs, data_labels = next(iter(data_loader))
+print("Data inputs", data_inputs.shape, "\n", data_inputs)
+print("Data labels", data_labels.shape, "\n", data_labels)
