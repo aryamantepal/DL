@@ -125,4 +125,13 @@ def train_model(model, optimizer, data_loader, loss_module, num_epochs=100):
 train_model(model, optimizer, train_data_loader, loss_module)
 # saving the model
 state_dict = model.state_dict()
+torch.save(state_dict, "our_model.tar")
+
+# loading the model
+state_dict = torch.load("our_model.tar")
+new_model = SimpleClassifier(num_inputs=2, num_hidden=4, num_outputs=1)
+new_model.load_state_dict(state_dict)
+
+print("Original model\n", model.state_dict())
+print("\nLoaded model\n", new_model.state_dict())
 
