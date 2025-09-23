@@ -315,3 +315,10 @@ def test_model(net, data_loader):
             count += labels.shape[0]
     test_acc = true_preds / count
     return test_acc
+
+for act_fn_name in act_fn_by_name:
+    print(f"Training BaseNetwork with {act_fn_name} activation...")
+    set_seed(42)
+    act_fn = act_fn_by_name[act_fn_name]()
+    net_actfn = BaseNetwork(act_fn=act_fn).to(device)
+    train_model(net_actfn, f"FashionMNIST_{act_fn_name}", overwrite=False)
