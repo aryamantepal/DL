@@ -22,7 +22,7 @@ import torch.nn.functional as F
 import torch.utils.data as data
 import torch.optim as optim
 
-from data import train_set, test_set, val_set
+from data import train_set, val_loader, test_loader
 
 DATASET_PATH = "../data"
 CHECKPOINT_PATH = "../saved_models/tutorial3"
@@ -224,3 +224,94 @@ def save_model(model, model_path, model_name):
         json.dump(config_dict, f)
     torch.save(model.state_dict(), model_file)
     
+def train_model(net, model_name, max_epochs=50, patience=7, batch_size=256, overwrite=False):
+    """
+    Train a model on the training set of FashionMNIST
+
+    Inputs:
+        net - Object of BaseNetwork
+        model_name - (str) Name of the model, used for creating the checkpoint names
+        max_epochs - Number of epochs we want to (maximally) train for
+        patience - If the performance on the validation set has not improved for #patience epochs, we stop training early
+        batch_size - Size of batches used in training
+        overwrite - Determines how to handle the case when there already exists a checkpoint. If True, it will be overwritten. Otherwise, we skip training.
+    """
+    file_exists = os.path.isfile(_get_model_file(CHECKPOINT_PATH, model_name))
+    if file_exists and not overwrite:
+        print("Model file already exists. Skipping training...")
+    else:
+        if file_exists:
+            print("Model file exists, but will be overwritten...")
+
+        # Defining optimizer, loss and data loader
+        optimizer = optim.SGD(net.parameters(), lr=1e-2, momentum=0.9) # Default parameters, feel free to change
+        loss_module = nn.CrossEntropyLoss()
+        train_loader_local = data.DataLoader(train_set, batch_size=batch_size, shuffle=True, drop_last=True, pin_memory=True)
+
+        val_scores = []
+        best_val_epoch = -1
+        for epoch in range(max_epochs):
+            ############
+            # Training #
+            ############
+            net.train()
+            true_preds, count = 0., 0
+            for imgs, labels in tqdm(train_loader_local, desc=f"Epoch {epoch+1}", leave=False):
+                imgs, labels = imgs.to(device), labels.to(device) # To GPU
+                optimizer.zero_grad() # Zero-grad can be placed anywhere before "loss.backward()"
+                preds = net(imgs)
+                loss = loss_module(preds, labels)
+                loss.backward()
+                optimizer.step()
+                # Record statistics during training
+                true_preds += (preds.argmax(dim=-1) == labels).sum()
+                count += labels.shape[0]
+            train_acc = true_preds / count
+
+            ##############
+            # Validation #
+            ##############
+            val_acc = test_model(net, val_loader)
+            val_scores.append(val_acc)
+            print(f"[Epoch {epoch+1:2d}] Training accuracy: {train_acc*100.0:05.2f}%, Validation accuracy: {val_acc*100.0:05.2f}%")
+
+            if len(val_scores) == 1 or val_acc > val_scores[best_val_epoch]:
+                print("\t   (New best performance, saving model...)")
+                save_model(net, CHECKPOINT_PATH, model_name)
+                best_val_epoch = epoch
+            elif best_val_epoch <= epoch - patience:
+                print(f"Early stopping due to no improvement over the last {patience} epochs")
+                break
+
+        # Plot a curve of the validation accuracy
+        plt.plot([i for i in range(1,len(val_scores)+1)], val_scores)
+        plt.xlabel("Epochs")
+        plt.ylabel("Validation accuracy")
+        plt.title(f"Validation performance of {model_name}")
+        plt.show()
+        plt.close()
+
+    load_model(CHECKPOINT_PATH, model_name, net=net)
+    test_acc = test_model(net, test_loader)
+    print((f" Test accuracy: {test_acc*100.0:4.2f}% ").center(50, "=")+"\n")
+    return test_acc
+
+
+def test_model(net, data_loader):
+    """
+    Test a model on a specified dataset.
+
+    Inputs:
+        net - Trained model of type BaseNetwork
+        data_loader - DataLoader object of the dataset to test on (validation or test)
+    """
+    net.eval()
+    true_preds, count = 0., 0
+    for imgs, labels in data_loader:
+        imgs, labels = imgs.to(device), labels.to(device)
+        with torch.no_grad():
+            preds = net(imgs).argmax(dim=-1)
+            true_preds += (preds == labels).sum().item()
+            count += labels.shape[0]
+    test_acc = true_preds / count
+    return test_acc
