@@ -38,3 +38,28 @@ torch.backends.cudnn.benchmark = False
 
 device = torch.device("cpu") if not torch.cuda.is_available() else torch.device("cuda:0")
 print("Using device", device)
+
+import urllib.request
+from urllib.error import HTTPError
+# Github URL where saved models are stored for this tutorial
+base_url = "https://raw.githubusercontent.com/phlippe/saved_models/main/tutorial3/"
+# Files to download
+pretrained_files = ["FashionMNIST_elu.config", "FashionMNIST_elu.tar",
+                    "FashionMNIST_leakyrelu.config", "FashionMNIST_leakyrelu.tar",
+                    "FashionMNIST_relu.config", "FashionMNIST_relu.tar",
+                    "FashionMNIST_sigmoid.config", "FashionMNIST_sigmoid.tar",
+                    "FashionMNIST_swish.config", "FashionMNIST_swish.tar",
+                    "FashionMNIST_tanh.config", "FashionMNIST_tanh.tar"]
+# Create checkpoint path if it doesn't exist yet
+os.makedirs(CHECKPOINT_PATH, exist_ok=True)
+
+# For each file, check whether it already exists. If not, try downloading it.
+for file_name in pretrained_files:
+    file_path = os.path.join(CHECKPOINT_PATH, file_name)
+    if not os.path.isfile(file_path):
+        file_url = base_url + file_name
+        print(f"Downloading {file_url}...")
+        try:
+            urllib.request.urlretrieve(file_url, file_path)
+        except HTTPError as e:
+            print("Something went wrong. Please try to download the file from the GDrive folder, or contact the author with the full output including the following error:\n", e)
