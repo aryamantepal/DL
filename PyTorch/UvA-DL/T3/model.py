@@ -221,3 +221,25 @@ def save_model(model, model_path, model_name):
     with open(config_file, "w") as f:
         json.dump(config_dict, f)
     torch.save(model.state_dict(), model_file)
+    
+import torchvision
+from torchvision.datasets import FashionMNIST
+from torchvision import transforms
+
+# Transformations applied on each image => first make them a tensor, then normalize them in the range -1 to 1
+transform = transforms.Compose([transforms.ToTensor(),
+                                transforms.Normalize((0.5,), (0.5,))])
+
+# Loading the training dataset. We need to split it into a training and validation part
+train_dataset = FashionMNIST(root=DATASET_PATH, train=True, transform=transform, download=True)
+train_set, val_set = torch.utils.data.random_split(train_dataset, [50000, 10000])
+
+# Loading the test set
+test_set = FashionMNIST(root=DATASET_PATH, train=False, transform=transform, download=True)
+
+# We define a set of data loaders that we can use for various purposes later.
+# Note that for actually training a model, we will use different data loaders
+# with a lower batch size.
+train_loader = data.DataLoader(train_set, batch_size=1024, shuffle=True, drop_last=False)
+val_loader = data.DataLoader(val_set, batch_size=1024, shuffle=False, drop_last=False)
+test_loader = data.DataLoader(test_set, batch_size=1024, shuffle=False, drop_last=False)
