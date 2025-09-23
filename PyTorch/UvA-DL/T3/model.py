@@ -22,6 +22,8 @@ import torch.nn.functional as F
 import torch.utils.data as data
 import torch.optim as optim
 
+from data import train_set, test_set, val_set
+
 DATASET_PATH = "../data"
 CHECKPOINT_PATH = "../saved_models/tutorial3"
 
