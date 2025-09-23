@@ -63,3 +63,20 @@ for file_name in pretrained_files:
             urllib.request.urlretrieve(file_url, file_path)
         except HTTPError as e:
             print("Something went wrong. Please try to download the file from the GDrive folder, or contact the author with the full output including the following error:\n", e)
+            
+            
+class ActivationFunction(nn.Module):
+
+    def __init__(self):
+        super().__init__()
+        self.name = self.__class__.__name__
+        self.config = {"name": self.name}
+
+class Sigmoid(ActivationFunction):
+    def forward(self, x):
+        return 1 / (1 + torch.exp(-x))
+
+class Tanh(ActivationFunction):
+    def forward(self, x):
+        x_exp, neg_x_exp = torch.exp(x), torch.exp(-x)
+        return (x_exp - neg_x_exp) / (x_exp + neg_x_exp)
