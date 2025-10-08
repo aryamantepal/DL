@@ -412,3 +412,27 @@ class ResNet(nn.Module):
         x = self.blocks(x)
         x = self.output_net(x)
         return x
+    
+model_dict["ResNet"] = ResNet
+
+resnet_model, resnet_results = train_model(model_name="ResNet",
+                                           model_hparams={"num_classes": 10,
+                                                          "c_hidden": [16,32,64],
+                                                          "num_blocks": [3,3,3],
+                                                          "act_fn_name": "relu"},
+                                           optimizer_name="SGD",
+                                           optimizer_hparams={"lr": 0.1,
+                                                              "momentum": 0.9,
+                                                              "weight_decay": 1e-4})
+
+resnetpreact_model, resnetpreact_results = train_model(model_name="ResNet",
+                                                       model_hparams={"num_classes": 10,
+                                                                      "c_hidden": [16,32,64],
+                                                                      "num_blocks": [3,3,3],
+                                                                      "act_fn_name": "relu",
+                                                                      "block_name": "PreActResNetBlock"},
+                                                       optimizer_name="SGD",
+                                                       optimizer_hparams={"lr": 0.1,
+                                                                          "momentum": 0.9,
+                                                                          "weight_decay": 1e-4},
+                                                       save_name="ResNetPreAct")
