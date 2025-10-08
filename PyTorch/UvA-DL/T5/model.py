@@ -574,3 +574,13 @@ class DenseNet(nn.Module):
         return x
 
 model_dict["DenseNet"] = DenseNet
+
+densenet_model, densenet_results = train_model(model_name="DenseNet",
+                                               model_hparams={"num_classes": 10,
+                                                              "num_layers": [6,6,6,6],
+                                                              "bn_size": 2,
+                                                              "growth_rate": 16,
+                                                              "act_fn_name": "relu"},
+                                               optimizer_name="Adam",
+                                               optimizer_hparams={"lr": 1e-3,
+                                                                  "weight_decay": 1e-4})
