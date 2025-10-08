@@ -10,6 +10,14 @@ from torchvision import transforms
 # PyTorch Lightning
 import pytorch_lightning as pl
 
+import os
+import numpy as np
+import random
+from PIL import Image
+from types import SimpleNamespace
+
+from main import val_loader, test_loader, train_loader, CHECKPOINT_PATH, device
+
 class CIFARModule(pl.LightningModule):
 
     def __init__(self, model_name, model_hparams, optimizer_name, optimizer_hparams):
@@ -87,3 +95,48 @@ def create_model(model_name, model_hparams):
         return model_dict[model_name](**model_hparams)
     else:
         assert False, f"Unknown model name \"{model_name}\". Available models are: {str(model_dict.keys())}"
+        
+act_fn_by_name = {
+    "tanh": nn.Tanh,
+    "relu": nn.ReLU,
+    "leakyrelu": nn.LeakyReLU,
+    "gelu": nn.GELU
+}
+
+def train_model(model_name, save_name=None, **kwargs):
+    """
+    Inputs:
+        model_name - Name of the model you want to run. Is used to look up the class in "model_dict"
+        save_name (optional) - If specified, this name will be used for creating the checkpoint and logging directory.
+    """
+    if save_name is None:
+        save_name = model_name
+
+    # Create a PyTorch Lightning trainer with the generation callback
+    trainer = pl.Trainer(default_root_dir=os.path.join(CHECKPOINT_PATH, save_name),                          # Where to save models
+                         accelerator="gpu" if str(device).startswith("cuda") else "cpu",                     # We run on a GPU (if possible)
+                         devices=1,                                                                          # How many GPUs/CPUs we want to use (1 is enough for the notebooks)
+                         max_epochs=180,                                                                     # How many epochs to train for if no patience is set
+                         callbacks=[ModelCheckpoint(save_weights_only=True, mode="max", monitor="val_acc"),  # Save the best checkpoint based on the maximum val_acc recorded. Saves only weights and not optimizer
+                                    LearningRateMonitor("epoch")],                                           # Log learning rate every epoch
+                         enable_progress_bar=True)                                                           # Set to False if you do not want a progress bar
+    trainer.logger._log_graph = True         # If True, we plot the computation graph in tensorboard
+    trainer.logger._default_hp_metric = None # Optional logging argument that we don't need
+
+    # Check whether pretrained model exists. If yes, load it and skip training
+    pretrained_filename = os.path.join(CHECKPOINT_PATH, save_name + ".ckpt")
+    if os.path.isfile(pretrained_filename):
+        print(f"Found pretrained model at {pretrained_filename}, loading...")
+        model = CIFARModule.load_from_checkpoint(pretrained_filename) # Automatically loads the model with the saved hyperparameters
+    else:
+        pl.seed_everything(42) # To be reproducable
+        model = CIFARModule(model_name=model_name, **kwargs)
+        trainer.fit(model, train_loader, val_loader)
+        model = CIFARModule.load_from_checkpoint(trainer.checkpoint_callback.best_model_path) # Load best checkpoint after training
+
+    # Test best model on validation and test set
+    val_result = trainer.test(model, val_loader, verbose=False)
+    test_result = trainer.test(model, test_loader, verbose=False)
+    result = {"test": test_result[0]["test_acc"], "val": val_result[0]["test_acc"]}
+
+    return model, result
