@@ -1,3 +1,15 @@
+## PyTorch
+import torch
+import torch.nn as nn
+import torch.utils.data as data
+import torch.optim as optim
+# Torchvision
+import torchvision
+from torchvision.datasets import CIFAR10
+from torchvision import transforms
+# PyTorch Lightning
+import pytorch_lightning as pl
+
 class CIFARModule(pl.LightningModule):
 
     def __init__(self, model_name, model_hparams, optimizer_name, optimizer_hparams):
@@ -63,3 +75,15 @@ class CIFARModule(pl.LightningModule):
         acc = (labels == preds).float().mean()
         # By default logs it per epoch (weighted average over batches), and returns it afterwards
         self.log('test_acc', acc)
+        
+        
+from pytorch_lightning.callbacks import LearningRateMonitor, ModelCheckpoint
+
+
+model_dict = {}
+
+def create_model(model_name, model_hparams):
+    if model_name in model_dict:
+        return model_dict[model_name](**model_hparams)
+    else:
+        assert False, f"Unknown model name \"{model_name}\". Available models are: {str(model_dict.keys())}"
