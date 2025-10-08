@@ -335,7 +335,11 @@ class PreActResNetBlock(nn.Module):
         out = z + x
         return out
     
-    
+resnet_blocks_by_name = {
+    "ResNetBlock": ResNetBlock,
+    "PreActResNetBlock": PreActResNetBlock
+}
+
 class ResNet(nn.Module):
 
     def __init__(self, num_classes=10, num_blocks=[3,3,3], c_hidden=[16,32,64], act_fn_name="relu", block_name="ResNetBlock", **kwargs):
