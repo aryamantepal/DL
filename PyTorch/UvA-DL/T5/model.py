@@ -252,3 +252,12 @@ class GoogleNet(nn.Module):
         return x
 
 model_dict["GoogleNet"] = GoogleNet
+
+googlenet_model, googlenet_results = train_model(model_name="GoogleNet",
+                                                 model_hparams={"num_classes": 10,
+                                                                "act_fn_name": "relu"},
+                                                 optimizer_name="Adam",
+                                                 optimizer_hparams={"lr": 1e-3,
+                                                                    "weight_decay": 1e-4})
+
+print("GoogleNet Results", googlenet_results)
