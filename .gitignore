@@ -8,3 +8,4 @@ __pycache__
 PyTorch/GAN/Pokemon-Sprite/pokemon_images
 out
 PyTorch/UvA-DL/saved_models*.ckpt
+saved_models
