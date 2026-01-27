@@ -7,4 +7,4 @@ experiments/CNN/PyTorch/MNISTdata
 __pycache__
 PyTorch/GAN/Pokemon-Sprite/pokemon_images
 out
-PyTorch/UvA-DL/saved_models
+PyTorch/UvA-DL/saved_models*.ckpt
